@@ -1,0 +1,215 @@
+#include<stdio.h>
+
+
+
+struct procces
+
+{
+
+  int id,AT,BT,WT,TT,RT,prev_endtime,done,endtime;
+
+}d[10];
+
+
+
+int TQ,temp,start=0,cr,ct=0,queue[20],front=-1,rear=-1;
+
+
+
+void enqueue(int n)
+
+{
+
+  if(front==-1)
+
+     front=rear=0;
+
+  else
+
+    rear=rear+1;
+
+  queue[rear]=n;
+
+}
+
+
+
+int dequeue()
+
+{
+
+ int n=queue[front];
+
+  if(front==rear)
+
+     front=rear=-1;
+
+  else
+
+    front=front+1;
+
+  return n;
+
+}
+
+
+
+int queueContains(int index)
+
+{
+
+   if(queue[rear]==index)
+
+      return 1;
+
+   for(int i=front;i!=rear;i++)
+
+   {
+
+     if(queue[i]==index)
+
+        return 1;
+
+   }
+
+   return 0;
+
+}
+
+
+
+void main()
+
+{
+
+   int n,index=0,tot_wt=0,tot_tat=0;
+
+   float avg_wt,avg_tat;
+
+   printf("Enter the no fo processes:");
+
+   scanf("%d",&n);
+
+   printf("Enter the processes:");
+
+   for(int i=0;i<n;i++)
+
+   {
+
+      scanf("%d",&d[i].id);
+
+      d[i].WT=0;
+
+   }
+
+    printf("Enter the arrival time:");
+
+   for(int i=0;i<n;i++)
+
+   {
+
+      scanf("%d",&d[i].AT);
+
+     d[i].prev_endtime=d[i].AT;
+
+   }
+
+    printf("Enter the burst time:");
+
+   for(int i=0;i<n;i++)
+
+   {
+
+      scanf("%d",&d[i].BT);
+
+      d[i].RT=d[i].BT;
+
+   }
+
+    printf("Enter the quantum time:");
+
+   scanf("%d",&TQ);
+
+   enqueue(0);
+
+   while(front!=-1)
+
+   {
+
+     int current=dequeue();
+
+     if(start<d[current].AT)
+
+        start=d[current].AT;
+
+     d[current].WT+=start-d[current].prev_endtime;
+
+     if(d[current].RT<=TQ)
+
+     {
+
+        start+=d[current].RT;
+
+       d[current].endtime=start;
+
+       d[current].TT=d[current].endtime-d[current].AT;
+
+       d[current].done=1;
+
+     }
+
+     else
+
+     {
+
+       start+=TQ;
+
+       d[current].prev_endtime=start;
+
+       d[current].RT-=TQ;
+
+     }
+
+     for(int i=current+1;i<n;i++)
+
+     {
+
+        if(d[i].AT>start)
+
+          break;
+
+        if(!d[i].done&&!queueContains(i))
+
+           enqueue(i);
+
+       }
+
+       if(!d[current].done)
+
+          enqueue(current);
+
+     }
+
+     printf("\nPID\tBT\tAT\tWT\tTAT");
+
+    for(int i=0;i<n;i++)
+
+    {
+
+      printf("\nP%d\t%d\t%d\t%d\t%d",d[i].id,d[i].BT,d[i].AT,d[i].WT,d[i].TT);
+
+      tot_wt+=d[i].WT;
+
+      tot_tat+=d[i].TT;
+
+    }
+
+       avg_wt=(float)tot_wt/n;
+
+      avg_tat=(float)tot_tat/n;
+
+      printf("\nAverage Waiting time:%f",avg_wt);
+
+      printf("\nAverage Turnaround time:%f\n",avg_tat);
+
+   }
