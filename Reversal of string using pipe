@@ -1,0 +1,85 @@
+#include<stdio.h>
+
+#include<unistd.h>
+
+#include<sys/wait.h>
+
+#include<sys/types.h>
+
+#include<string.h>
+
+#include<stdlib.h>
+
+
+
+int main()
+
+{
+
+  int i,j=0,fd1[2],fd2[2];
+
+  char str[20],rev[20],str1[20];
+
+  pid_t p,p1;
+
+  pipe(fd1);
+
+  pipe(fd2);
+
+  printf("\nEnter a String :");
+
+  scanf("%s",str);
+
+  p=fork();
+
+  if(p>0)
+
+  {
+
+    //close(fd1[0]);
+
+    //close(fd2[1]);
+
+    printf("\nPROCESS 1:Writing to PIPE 1\n");
+
+    write(fd1[1],str,sizeof(str));
+
+    
+
+   read(fd2[0],rev,sizeof(rev));
+
+   printf("\nReversed String is:%s\n",rev);
+
+    }
+
+    else 
+
+    {
+
+    //close(fd1[1]);
+
+    //close(fd2[0]);
+
+       read(fd1[0],str,sizeof(str));
+
+       printf("\nPROCESS 2:Reversing the String\n");
+
+       for( i=strlen(str)-1;i>=0;i--)
+
+       {
+
+           rev[j]=str[i];
+
+           j++;
+
+       }
+
+       write(fd2[1],rev,strlen(rev));
+
+    
+
+  }
+
+  return 0;
+
+}
